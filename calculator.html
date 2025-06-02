@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simple Calculator</title>
+  <style>
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Orbitron', sans-serif;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #2c3e50, #4ca1af);
+}
+
+.calculator {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  width: 340px;
+  transition: all 0.3s ease;
+}
+
+.display {
+  background: rgba(0, 0, 0, 0.75);
+  color: #0ff;
+  font-size: 2.7rem;
+  text-align: right;
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  height: 70px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.btn {
+  padding: 20px;
+  font-size: 1.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 15px;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.2s;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.operator {
+  background: #f39c12;
+  color: #fff;
+}
+
+.operator:hover {
+  background: #e67e22;
+}
+
+.equal {
+  background: #27ae60;
+  color: white;
+}
+
+.equal:hover {
+  background: #2ecc71;
+}
+
+.zero {
+  grid-column: span 2;
+}
+
+/* Responsive Design */
+@media (max-width: 400px) {
+  .calculator {
+    width: 95%;
+  }
+
+  .btn {
+    font-size: 1.2rem;
+    padding: 16px;
+  }
+
+  .display {
+    font-size: 2.2rem;
+    padding: 15px;
+  }
+}
+/* Add to existing style.css */
+
+/* Toggle Switch Styles */
+.theme-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  background-color: #ccc;
+  border-radius: 34px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: 0.4s;
+}
+
+.slider:before {
+  content: "";
+  position: absolute;
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* Button press animation */
+.btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Theme */
+body.dark {
+  background: linear-gradient(135deg, #1e1e2f, #2c3e50);
+}
+
+body.dark .calculator {
+  background: rgba(20, 20, 40, 0.8);
+}
+
+body.dark .display {
+  background: rgba(0, 0, 0, 0.9);
+  color: #0ff;
+}
+
+body.dark .btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #eee;
+}
+
+body.dark .btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+body.dark .operator {
+  background: #ff5722;
+}
+
+body.dark .equal {
+  background: #43a047;
+}
+
+
+</style>
+</head>
+<body>
+<div class="theme-toggle">
+  <label class="switch">
+    <input type="checkbox" id="theme-switch" />
+    <span class="slider"></span>
+  </label>
+</div>
+
+  <div class="calculator">
+    <div class="display" id="display">0</div>
+    <div class="buttons">
+      <button class="btn" onclick="clearDisplay()">C</button>
+      <button class="btn" onclick="deleteLast()">⌫</button>
+      <button class="btn" onclick="appendOperator('%')">%</button>
+      <button class="btn operator" onclick="appendOperator('/')">÷</button>
+
+      <button class="btn" onclick="appendNumber('7')">7</button>
+      <button class="btn" onclick="appendNumber('8')">8</button>
+      <button class="btn" onclick="appendNumber('9')">9</button>
+      <button class="btn operator" onclick="appendOperator('*')">×</button>
+
+      <button class="btn" onclick="appendNumber('4')">4</button>
+      <button class="btn" onclick="appendNumber('5')">5</button>
+      <button class="btn" onclick="appendNumber('6')">6</button>
+      <button class="btn operator" onclick="appendOperator('-')">−</button>
+
+      <button class="btn" onclick="appendNumber('1')">1</button>
+      <button class="btn" onclick="appendNumber('2')">2</button>
+      <button class="btn" onclick="appendNumber('3')">3</button>
+      <button class="btn operator" onclick="appendOperator('+')">+</button>
+
+      <button class="btn zero" onclick="appendNumber('0')">0</button>
+      <button class="btn" onclick="appendNumber('.')">.</button>
+      <button class="btn equal" onclick="calculate()">=</button>
+    </div>
+  </div>
+  <script >
+let display = document.getElementById('display');
+let currentInput = '';
+
+function appendNumber(num) {
+  if (currentInput === '0' && num !== '.') {
+    currentInput = num;
+  } else {
+    currentInput += num;
+  }
+  updateDisplay();
+}
+
+function appendOperator(op) {
+  if (currentInput === '') return;
+  const lastChar = currentInput.slice(-1);
+  if ('+-*/%'.includes(lastChar)) {
+    currentInput = currentInput.slice(0, -1) + op;
+  } else {
+    currentInput += op;
+  }
+  updateDisplay();
+}
+
+function clearDisplay() {
+  currentInput = '';
+  updateDisplay('0');
+}
+
+function deleteLast() {
+  currentInput = currentInput.slice(0, -1);
+  updateDisplay(currentInput || '0');
+}
+
+function calculate() {
+  try {
+    const result = eval(currentInput.replace(/÷/g, '/').replace(/×/g, '*'));
+    currentInput = result.toString();
+    updateDisplay();
+  } catch (e) {
+    updateDisplay('Error');
+    currentInput = '';
+  }
+}
+
+function updateDisplay(value) {
+  display.textContent = value || currentInput;
+}
+
+// Optional: Keyboard support
+document.addEventListener('keydown', (e) => {
+  const key = e.key;
+  if (!isNaN(key) || ['+', '-', '*', '/', '%', '.'].includes(key)) {
+    appendNumber(key);
+  } else if (key === 'Enter') {
+    e.preventDefault();
+    calculate();
+  } else if (key === 'Backspace') {
+    deleteLast();
+  } else if (key.toLowerCase() === 'c') {
+    clearDisplay();
+  }
+})
+// Add these at the top
+const themeSwitch = document.getElementById('theme-switch');
+const body = document.body;
+
+// Vibration feedback (mobile)
+function vibrate() {
+  if (navigator.vibrate) {
+    navigator.vibrate(20);
+  }
+}
+
+// Modify all interaction functions to call vibrate()
+function appendNumber(num) {
+  vibrate();
+  if (currentInput === '0' && num !== '.') {
+    currentInput = num;
+  } else {
+    currentInput += num;
+  }
+  updateDisplay();
+}
+
+function appendOperator(op) {
+  vibrate();
+  if (currentInput === '') return;
+  const lastChar = currentInput.slice(-1);
+  if ('+-*/%'.includes(lastChar)) {
+    currentInput = currentInput.slice(0, -1) + op;
+  } else {
+    currentInput += op;
+  }
+  updateDisplay();
+}
+
+function clearDisplay() {
+  vibrate();
+  currentInput = '';
+  updateDisplay('0');
+}
+
+function deleteLast() {
+  vibrate();
+  currentInput = currentInput.slice(0, -1);
+  updateDisplay(currentInput || '0');
+}
+
+function calculate() {
+  vibrate();
+  try {
+    const result = eval(currentInput.replace(/÷/g, '/').replace(/×/g, '*'));
+    currentInput = result.toString();
+    updateDisplay();
+  } catch (e) {
+    updateDisplay('Error');
+    currentInput = '';
+  }
+}
+
+// Theme switcher
+themeSwitch.addEventListener('change', () => {
+  body.classList.toggle('dark');
+});
+
+// Keyboard support (optional vibration)
+document.addEventListener('keydown', (e) => {
+  const key = e.key;
+  vibrate();
+  if (!isNaN(key) || ['+', '-', '*', '/', '%', '.'].includes(key)) {
+    appendNumber(key);
+  } else if (key === 'Enter') {
+    e.preventDefault();
+    calculate();
+  } else if (key === 'Backspace') {
+    deleteLast();
+  } else if (key.toLowerCase() === 'c') {
+    clearDisplay();
+  }
+});
+
+
+</script>
+</body>
+</html>
